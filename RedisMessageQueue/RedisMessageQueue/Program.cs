@@ -16,7 +16,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetValue<string>("RedisSettings:ConnectionString");
 });
 
-builder.Services.AddScoped<IMessageQueueRepository, MessageQueueRepository>();
+builder.Services.AddScoped<IQueueRepository, QueueRepository>();
 
 
 var app = builder.Build();

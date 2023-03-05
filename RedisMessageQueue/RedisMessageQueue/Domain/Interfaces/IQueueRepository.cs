@@ -2,9 +2,9 @@
 
 namespace RedisMessageQueue.Domain.Interfaces
 {
-    public interface IMessageQueueRepository
+    public interface IQueueRepository
     {
-        Task<int> GetAllMessagesAsync();
+        Task<IEnumerable<Message>> GetAllMessagesAsync();
 
         Task<Message> GetMessageContentAsync();
 
