@@ -8,6 +8,8 @@ namespace RedisMessageQueue.Domain.Interfaces
 
         Task<Message> GetMessageContentAsync();
 
-        Task<bool> SaveMessage(Message message);
+        Task<bool> SaveMessageAsync(Message message);
+
+        Task<Message> DeleteMessageContentAsync(DateTime key);
     }
 }

@@ -12,14 +12,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+// add redis connection
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ =>
     ConnectionMultiplexer.Connect(new ConfigurationOptions
     {
         EndPoints = { builder.Configuration.GetValue<string>("RedisSettings:ConnectionString") }
     }));
 
+// add queue repository
 builder.Services.AddScoped<IQueueRepository, QueueRepository>();
-
 
 var app = builder.Build();
 
