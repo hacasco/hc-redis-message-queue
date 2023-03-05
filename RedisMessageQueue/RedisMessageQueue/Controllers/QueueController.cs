@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RedisMessageQueue.Domain.Interfaces;
-using RedisMessageQueue.Domain.Models;
 
 namespace RedisMessageQueue.Controllers
 {
@@ -16,30 +15,34 @@ namespace RedisMessageQueue.Controllers
             _queueRepository = queueRepository;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllMessages()
-        {
-            return Ok(await _queueRepository.GetAllMessagesAsync());
-        }
-
         [HttpPost("push", Name = "Push")]
-        public async Task<IActionResult> Push([FromBody] Message message)
+        public async Task<IActionResult> Push([FromBody] string message)
         {
             if (null == message)
             {
                 return BadRequest("Message cannot be null or empty.");
             }
 
-            await _queueRepository.SaveMessageAsync(message);
+            await _queueRepository.PushMessageAsync(message);
 
             return Ok();
         }
 
-        [HttpGet("count", Name ="Count")]
-        public async Task<IActionResult> Count()
+        [HttpPost("pop")]
+        public async Task<IActionResult> PopAsync()
         {
-            var messages = await _queueRepository.GetAllMessagesAsync();
-            return Ok(messages.Count());
+            var message = await _queueRepository.PopMessageAsync();
+
+            if (null == message)
+                return NotFound("Queue is empty.");
+
+            return Ok(message);
+        }
+
+        [HttpGet("count")]
+        public async Task<IActionResult> CountAsync()
+        {
+            return Ok(await _queueRepository.CountMessagesAsync());
         }
 
         private IQueueRepository _queueRepository;

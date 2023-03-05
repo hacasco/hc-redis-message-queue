@@ -1,5 +1,4 @@
 ﻿using RedisMessageQueue.Domain.Interfaces;
-using RedisMessageQueue.Domain.Models;
 using StackExchange.Redis;
 
 namespace RedisMessageQueue.Infrastructure
@@ -12,42 +11,39 @@ namespace RedisMessageQueue.Infrastructure
                 throw new ArgumentNullException(nameof(redisCache));
 
             _redisCache = redisCache;
-            InitializeDatabase();
+            _redisDatabase = _redisCache.GetDatabase(0);
         }
 
-        public async Task<IEnumerable<Message>> GetAllMessagesAsync()
+        public async Task<bool> PushMessageAsync(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                throw new ArgumentException($"{nameof(message)} cannot be null or empty.");
+
+            return await _redisDatabase.StringSetAsync(DateTime.Now.ToString(), message);
+        }
+
+        public async Task<string> PopMessageAsync()
         {
             await RefreshQueue();
 
-            return _messages;
+            if (_messages.Count == 0)
+                return null;
+
+            var message = _messages.FirstOrDefault();
+            await _redisDatabase.KeyDeleteAsync(message.Key.ToString());
+
+            return message.Value;
         }
 
-        public Task<Message> GetMessageContentAsync()
+        public async Task<int> CountMessagesAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> SaveMessageAsync(Message message)
-        {
-            if (null == message)
-                throw new ArgumentNullException(nameof(message));
-
-            return await _redisDatabase.StringSetAsync(message.CreationDate.ToString(), message.Content);
-        }
-
-        public Task<bool> DeleteMessageContentAsync(DateTime key)
-        {
-            throw new NotImplementedException();
+            await RefreshQueue();
+            return _messages.Count();
         }
 
         private IConnectionMultiplexer _redisCache;
         private IDatabase _redisDatabase;
-        private IEnumerable<Message> _messages = new List<Message>();
-
-        private void InitializeDatabase()
-        {
-            _redisDatabase = _redisCache.GetDatabase(0);
-        }
+        private SortedDictionary<DateTime, string> _messages = new SortedDictionary<DateTime, string>();
 
         private async Task RefreshQueue()
         {
@@ -56,18 +52,13 @@ namespace RedisMessageQueue.Infrastructure
             if (null != server)
             {
                 var redisKeys = server.Keys();
-                var unorderedMessages = new List<Message>();
 
                 foreach (var key in redisKeys)
                 {
-                    unorderedMessages.Add(new Message
-                    {
-                        CreationDate = Convert.ToDateTime(key),
-                        Content = await _redisDatabase.StringGetAsync(key)
-                    });
+                    _messages.TryAdd(
+                        Convert.ToDateTime(key),
+                        await _redisDatabase.StringGetAsync(key));
                 }
-
-                _messages = unorderedMessages.OrderBy(msg => msg.CreationDate);
             }
         }
     }
