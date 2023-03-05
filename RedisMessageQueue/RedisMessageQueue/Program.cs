@@ -1,5 +1,6 @@
 using RedisMessageQueue.Domain.Interfaces;
 using RedisMessageQueue.Infrastructure;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +12,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = builder.Configuration.GetValue<string>("RedisSettings:ConnectionString");
-});
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(new ConfigurationOptions
+    {
+        EndPoints = { builder.Configuration.GetValue<string>("RedisSettings:ConnectionString") }
+    }));
 
 builder.Services.AddScoped<IQueueRepository, QueueRepository>();
 
