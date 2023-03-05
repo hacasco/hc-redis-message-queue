@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  redismessagequeue:
+    image: ${DOCKER_REGISTRY-}redismessagequeue
+    build:
+      context: .
+      dockerfile: RedisMessageQueue/Dockerfile
