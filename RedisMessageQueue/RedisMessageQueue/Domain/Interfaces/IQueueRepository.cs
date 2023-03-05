@@ -1,15 +1,11 @@
-﻿using RedisMessageQueue.Domain.Models;
-
-namespace RedisMessageQueue.Domain.Interfaces
+﻿namespace RedisMessageQueue.Domain.Interfaces
 {
     public interface IQueueRepository
     {
-        Task<IEnumerable<Message>> GetAllMessagesAsync();
+        Task<string> PopMessageAsync();
 
-        Task<Message> GetMessageContentAsync();
+        Task<bool> PushMessageAsync(string message);
 
-        Task<bool> SaveMessageAsync(Message message);
-
-        Task<Message> DeleteMessageContentAsync(DateTime key);
+        Task<int> CountMessagesAsync();
     }
 }
