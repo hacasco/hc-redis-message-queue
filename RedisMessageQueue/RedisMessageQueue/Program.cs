@@ -1,11 +1,23 @@
+using RedisMessageQueue.Domain.Interfaces;
+using RedisMessageQueue.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetValue<string>("RedisSettings:ConnectionString");
+});
+
+builder.Services.AddScoped<IMessageQueueRepository, MessageQueueRepository>();
+
 
 var app = builder.Build();
 
