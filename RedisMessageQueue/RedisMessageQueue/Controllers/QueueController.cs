@@ -18,7 +18,7 @@ namespace RedisMessageQueue.Controllers
         [HttpPost("push")]
         public async Task<IActionResult> PushAsync([FromBody] string message)
         {
-            if (null == message)
+            if (string.IsNullOrWhiteSpace(message))
             {
                 return BadRequest("Message cannot be null or empty.");
             }
