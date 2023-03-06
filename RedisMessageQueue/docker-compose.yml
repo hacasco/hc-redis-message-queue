@@ -6,3 +6,11 @@ services:
     build:
       context: .
       dockerfile: RedisMessageQueue/Dockerfile
+
+  redis-db:
+    image: redis:latest
+    ports:
+        - "6379:6379"
+    volumes:
+        - ./redis:/redis
+
