@@ -15,8 +15,8 @@ namespace RedisMessageQueue.Controllers
             _queueRepository = queueRepository;
         }
 
-        [HttpPost("push", Name = "Push")]
-        public async Task<IActionResult> Push([FromBody] string message)
+        [HttpPost("push")]
+        public async Task<IActionResult> PushAsync([FromBody] string message)
         {
             if (null == message)
             {
