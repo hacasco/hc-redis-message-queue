@@ -1,6 +1,6 @@
 # Implement a Message Queue using Redis, Docker & .NET Core.
 
-## Problem Description
+## Problem
 
 The challenge consists of implementing a message queue using Redis and also implementing an API (it can be Flask) that allows us to abstract ourselves.
 This API must be made up of 3 methods (endpoints) that must comply with the following contract:
@@ -57,7 +57,7 @@ Anyway, in order to comply the requirements while trying to be faithful to the u
 
 - The API performs some basic validation, Push returns a `400` error if the message is null, Pop returns a `404` if the queue is empty.
 
-- Deployment is very straighforward, just run `docker compose up`. If needed, the `ConnectionString` value the _appsettings.json_ file before running the application.
+- Deployment is very straighforward, just run `docker compose up`. If needed, modify the `ConnectionString` value the _appsettings.json_ file before running the application.
 
 - Testing is also included. Make sure to run `docker compose up` to create the redis instance before running the tests.
 
